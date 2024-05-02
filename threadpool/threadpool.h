@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <exception>
 #include <pthread.h>
+#include <memory>
 #include "../lock/locker.h"
 #include "../CGImysql/sql_connection_pool.h"
 
@@ -74,7 +75,9 @@ bool threadpool<T>::append(T *request, int state)
         m_queuelocker.unlock();
         return false;
     }
+
     request->m_state = state;
+
     m_workqueue.push_back(request);
     m_queuelocker.unlock();
     m_queuestat.post();
@@ -96,8 +99,9 @@ bool threadpool<T>::append_p(T *request)
 }
 
 template <typename T>
-void *threadpool<T>::worker(void *arg)
+void* threadpool<T>::worker(void *arg)
 {
+    //std::shared_ptr<threadpool> pool = (threadpool*) arg;
     threadpool *pool = (threadpool *)arg;
     pool->run();
     return pool;

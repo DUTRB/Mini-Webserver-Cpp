@@ -69,8 +69,8 @@ public:
     };
 
 public:
-    http_conn() {}
-    ~http_conn() {}
+    http_conn() = default;
+    ~http_conn()  = default;
 
 public:
     void init(int sockfd, const sockaddr_in &addr, char *, int, int, string user, string passwd, string sqlname);
