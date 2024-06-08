@@ -70,10 +70,10 @@ public:
     epoll_event events[MAX_EVENT_NUMBER];
 
     int m_listenfd;
-    int m_OPT_LINGER;
-    int m_TRIGMode;
-    int m_LISTENTrigmode;
-    int m_CONNTrigmode;
+    int m_OPT_LINGER;     // 优雅关闭连接
+    int m_TRIGMode;       // 模式选择，listenfd和connfd的模式组合，默认使用LT + LT
+    int m_LISTENTrigmode; // listenFD触发模式
+    int m_CONNTrigmode;   // connFD触发模式
 
     //定时器相关
     client_data *users_timer;

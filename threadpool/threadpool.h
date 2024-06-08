@@ -8,6 +8,7 @@
 #include <memory>
 #include "../lock/locker.h"
 #include "../CGImysql/sql_connection_pool.h"
+#include <memory>
 
 template <typename T>
 class threadpool
@@ -31,10 +32,12 @@ private:
     std::list<T *> m_workqueue; //请求队列
     locker m_queuelocker;       //保护请求队列的互斥锁
     sem m_queuestat;            //是否有任务需要处理
+    //std::shared_ptr<connection_pool> m_connPool;
     connection_pool *m_connPool;  //数据库
     int m_actor_model;          //模型切换
 };
 
+// 构造函数
 template <typename T>
 threadpool<T>::threadpool( int actor_model, connection_pool *connPool, int thread_number, int max_requests) : m_actor_model(actor_model),m_thread_number(thread_number), m_max_requests(max_requests), m_threads(NULL),m_connPool(connPool)
 {

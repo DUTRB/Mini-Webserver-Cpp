@@ -57,6 +57,7 @@ int setnonblocking(int fd)
 }
 
 //将内核事件表注册读事件，ET模式，选择开启EPOLLONESHOT
+// fd 代表传入的 socket 文件描述符
 void addfd(int epollfd, int fd, bool one_shot, int TRIGMode)
 {
     epoll_event event;
@@ -109,7 +110,7 @@ void http_conn::close_conn(bool real_close)
     }
 }
 
-//初始化连接,外部调用初始化套接字地址
+//初始化连接,外部调用初始化 socket 套接字地址
 void http_conn::init(int sockfd, const sockaddr_in &addr, char *root, int TRIGMode,
                      int close_log, string user, string passwd, string sqlname)
 {
@@ -123,7 +124,7 @@ void http_conn::init(int sockfd, const sockaddr_in &addr, char *root, int TRIGMo
     doc_root = root;
     m_TRIGMode = TRIGMode;
     m_close_log = close_log;
-
+    // 将 c风格字符串复制到字符数组中
     strcpy(sql_user, user.c_str());
     strcpy(sql_passwd, passwd.c_str());
     strcpy(sql_name, sqlname.c_str());
@@ -513,6 +514,7 @@ http_conn::HTTP_CODE http_conn::do_request()
     close(fd);
     return FILE_REQUEST;
 }
+// 取消内存映射
 void http_conn::unmap()
 {
     if (m_file_address)
