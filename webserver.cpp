@@ -2,7 +2,7 @@
  * @Author: rubo
  * @Date: 2024-01-22 05:18:19
  * @LastEditors: HUAWEI-Ubuntu ruluy0205@163.com
- * @LastEditTime: 2024-04-30 11:01:12
+ * @LastEditTime: 2024-06-14 12:22:00
  * @FilePath: /MINIWebServer/webserver.cpp
  * @Description: 
  */
@@ -117,7 +117,7 @@ void WebServer::thread_pool()
  */
 void WebServer::eventListen()
 {
-    // 网络编程基础步骤
+    // 网络编程基础步骤 
     m_listenfd = socket(PF_INET, SOCK_STREAM, 0);
     assert(m_listenfd >= 0);
 
@@ -206,10 +206,10 @@ void WebServer::adjust_timer(util_timer *timer)
 
 void WebServer::deal_timer(util_timer *timer, int sockfd)
 {
-    timer->cb_func(&users_timer[sockfd]);
+    timer->cb_func(&users_timer[sockfd]); // 触发回调函数
     if (timer)
     {
-        utils.m_timer_lst.del_timer(timer);
+        utils.m_timer_lst.del_timer(timer); // 删除计时器
     }
 
     LOG_INFO("close fd %d", users_timer[sockfd].sockfd);
@@ -315,6 +315,7 @@ void WebServer::dealwithread(int sockfd)
             {
                 if (1 == users[sockfd].timer_flag)
                 {
+                    // 处理超时连接
                     deal_timer(timer, sockfd);
                     users[sockfd].timer_flag = 0;
                 }
@@ -326,7 +327,7 @@ void WebServer::dealwithread(int sockfd)
     else
     {
         // proactor
-        if (users[sockfd].read_once())
+        if (users[sockfd].read_once())  // 检查是否有数据可读
         {
             LOG_INFO("deal with the client(%s)", inet_ntoa(users[sockfd].get_address()->sin_addr));
 
