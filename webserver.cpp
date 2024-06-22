@@ -2,7 +2,7 @@
  * @Author: rubo
  * @Date: 2024-01-22 05:18:19
  * @LastEditors: HUAWEI-Ubuntu ruluy0205@163.com
- * @LastEditTime: 2024-06-14 12:22:00
+ * @LastEditTime: 2024-06-22 10:13:57
  * @FilePath: /MINIWebServer/webserver.cpp
  * @Description: 
  */
@@ -160,6 +160,7 @@ void WebServer::eventListen()
     utils.addfd(m_epollfd, m_listenfd, false, m_LISTENTrigmode);
     http_conn::m_epollfd = m_epollfd;
 
+    // 创建管道套接字
     ret = socketpair(PF_UNIX, SOCK_STREAM, 0, m_pipefd);
     assert(ret != -1);
     utils.setnonblocking(m_pipefd[1]);
@@ -168,7 +169,7 @@ void WebServer::eventListen()
     utils.addsig(SIGPIPE, SIG_IGN);
     utils.addsig(SIGALRM, utils.sig_handler, false);
     utils.addsig(SIGTERM, utils.sig_handler, false);
-
+    // 每隔TIMESLOT时间触发alarm信号
     alarm(TIMESLOT);
 
     // 工具类,信号和描述符基础操作
@@ -263,6 +264,8 @@ bool WebServer::dealwithsignal(bool &timeout, bool &stop_server)
     int ret = 0;
     int sig;
     char signals[1024];
+    //从管道读端读出信号值，成功返回字节数，失败返回-1
+    //正常情况下，这里的ret返回值总是1，只有14和15两个ASCII码对应的字符
     ret = recv(m_pipefd[0], signals, sizeof(signals), 0);
     if (ret == -1)
     {
@@ -401,7 +404,7 @@ void WebServer::eventLoop()
     bool timeout = false;
     bool stop_server = false;
 
-    while (!stop_server)
+    while (!stop_server)    
     {
         int number = epoll_wait(m_epollfd, events, MAX_EVENT_NUMBER, -1);
         if (number < 0 && errno != EINTR)

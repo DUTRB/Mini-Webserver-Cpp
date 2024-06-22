@@ -536,8 +536,10 @@ bool http_conn::write()
 
     while (1)
     {
+        // 返回发送字节长度
+        // 将响应报文的状态行、消息头、空行和响应正文发送给浏览器端
         temp = writev(m_sockfd, m_iv, m_iv_count);
-
+        // 发送不成功
         if (temp < 0)
         {
             if (errno == EAGAIN)
@@ -568,8 +570,10 @@ bool http_conn::write()
             unmap();
             modfd(m_epollfd, m_sockfd, EPOLLIN, m_TRIGMode);
 
+            // 浏览器请求为长连接
             if (m_linger)
             {
+                // 重新初始化http对象
                 init();
                 return true;
             }
@@ -700,5 +704,6 @@ void http_conn::process()
     {
         close_conn();
     }
+    //EPOLLOUT 代表socket准备好发送数据，写入操作不会阻塞
     modfd(m_epollfd, m_sockfd, EPOLLOUT, m_TRIGMode);
 }

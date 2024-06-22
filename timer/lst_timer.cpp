@@ -217,8 +217,10 @@ int Utils::u_epollfd = 0;
 class Utils;
 void cb_func(client_data *user_data)
 {
+    // 删除定时器上的分非活动连接
     epoll_ctl(Utils::u_epollfd, EPOLL_CTL_DEL, user_data->sockfd, 0);
     assert(user_data);
+    // 关闭文件描述符
     close(user_data->sockfd);
     http_conn::m_user_count--;
 }

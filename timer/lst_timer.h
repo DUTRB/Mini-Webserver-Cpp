@@ -26,27 +26,30 @@
 
 class util_timer;
 
+//连接资源
 struct client_data
 {
-    sockaddr_in address;
-    int sockfd;
-    util_timer *timer;
+    sockaddr_in address;  // 客户端地址
+    int sockfd;           // socket文件描述符
+    util_timer *timer;    // 定时器
 };
 
+// 定时器类
 class util_timer
 {
 public:
     util_timer() : prev(NULL), next(NULL) {}
 
 public:
-    time_t expire;
+    time_t expire;      // 超时时间
     
-    void (* cb_func)(client_data *);
-    client_data *user_data;
+    void (* cb_func)(client_data *); // 回调函数
+    client_data *user_data;     // 连接资源
     util_timer *prev;
     util_timer *next;
 };
 
+// 定时器链表
 class sort_timer_lst
 {
 public:
@@ -97,6 +100,7 @@ public:
     int m_TIMESLOT;
 };
 
+// 定时器回调函数
 void cb_func(client_data *user_data);
 
 #endif
